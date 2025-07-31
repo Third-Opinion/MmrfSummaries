@@ -1,0 +1,29 @@
+# Task ID: 2
+# Title: Implement Command Line Interface
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Create the command-line interface that handles argument parsing and validation according to the specified usage pattern.
+# Details:
+1. Use System.CommandLine or a similar library for argument parsing
+2. Implement the following required parameters:
+   - input-file: Path to input CSV file
+   - output-file: Path for output CSV file
+3. Implement optional parameters:
+   - --rows <number>: Number of rows to process (default: all)
+   - --config <path>: Custom config file path (default: appsettings.json)
+   - --verbose: Enable detailed logging
+   - --help: Display usage information
+4. Add validation for all parameters:
+   - Check if input file exists
+   - Verify output file path is valid
+   - Ensure rows parameter is a positive number
+5. Create a help text display that shows usage examples as specified in section 2.3.3
+6. Implement the Program.cs entry point that parses arguments and initializes the application
+
+# Test Strategy:
+1. Unit test argument parsing with various combinations of valid inputs
+2. Test error handling for invalid arguments
+3. Verify help text is displayed correctly
+4. Test file path validation logic
+5. Ensure default values are applied correctly when optional parameters are omitted

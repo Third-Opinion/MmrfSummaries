@@ -1,0 +1,30 @@
+# Task ID: 3
+# Title: Develop CSV Processing Component
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Create the CsvProcessor class to handle reading input CSV files and writing enhanced output files with additional summary columns.
+# Details:
+1. Implement the CsvProcessor class with methods:
+   - ReadTrialRecords(string inputPath): Reads CSV and returns IEnumerable<TrialRecord>
+   - WriteEnhancedRecords(string outputPath, IEnumerable<TrialRecord> records): Writes enhanced records to CSV
+2. Use CsvHelper library for CSV operations
+3. Ensure the processor handles the required columns:
+   - NCDID
+   - trial-title
+   - trial-description
+4. Add validation to check if required columns exist in the input file
+5. Implement logic to maintain original column order and data when writing output
+6. Add the new columns to output:
+   - short-summary
+   - long-summary
+7. Handle CSV format exceptions gracefully with clear error messages
+8. Implement batch processing capability to handle the specified number of rows
+
+# Test Strategy:
+1. Unit test with sample CSV files containing valid data
+2. Test with malformed CSV files to verify error handling
+3. Verify column preservation in output files
+4. Test with various CSV formats (different delimiters, quoted fields, etc.)
+5. Verify batch processing works correctly with different row limits
+6. Test with empty files and files with only headers

@@ -1,0 +1,154 @@
+{
+  "tasks": [],
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Project Structure and Configuration",
+        "description": "Initialize the .NET 8.0 project with required dependencies and create the configuration management system.",
+        "details": "1. Create a new .NET 8.0 console application using `dotnet new console`\n2. Add required NuGet packages:\n   - System.Text.Json\n   - CsvHelper\n   - Microsoft.Extensions.Configuration\n   - Microsoft.Extensions.Configuration.Json\n   - Microsoft.Extensions.Logging\n   - Microsoft.Extensions.Logging.Console\n3. Create the project structure with folders:\n   - Models (for data models)\n   - Services (for business logic)\n   - Helpers (for utility classes)\n4. Implement the ConfigurationManager class to load and parse appsettings.json\n5. Create the data models as specified in section 3.2.2:\n   - TrialRecord\n   - SummarySettings\n   - PromptConfiguration\n6. Create a default appsettings.json file with the structure specified in section 2.2.1",
+        "testStrategy": "1. Unit test the ConfigurationManager to ensure it correctly loads settings\n2. Verify all configuration sections are properly mapped to model objects\n3. Test with both valid and invalid configuration files\n4. Ensure API keys are properly handled and not exposed in logs",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Implement Command Line Interface",
+        "description": "Create the command-line interface that handles argument parsing and validation according to the specified usage pattern.",
+        "details": "1. Use System.CommandLine or a similar library for argument parsing\n2. Implement the following required parameters:\n   - input-file: Path to input CSV file\n   - output-file: Path for output CSV file\n3. Implement optional parameters:\n   - --rows <number>: Number of rows to process (default: all)\n   - --config <path>: Custom config file path (default: appsettings.json)\n   - --verbose: Enable detailed logging\n   - --help: Display usage information\n4. Add validation for all parameters:\n   - Check if input file exists\n   - Verify output file path is valid\n   - Ensure rows parameter is a positive number\n5. Create a help text display that shows usage examples as specified in section 2.3.3\n6. Implement the Program.cs entry point that parses arguments and initializes the application",
+        "testStrategy": "1. Unit test argument parsing with various combinations of valid inputs\n2. Test error handling for invalid arguments\n3. Verify help text is displayed correctly\n4. Test file path validation logic\n5. Ensure default values are applied correctly when optional parameters are omitted",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 3,
+        "title": "Develop CSV Processing Component",
+        "description": "Create the CsvProcessor class to handle reading input CSV files and writing enhanced output files with additional summary columns.",
+        "details": "1. Implement the CsvProcessor class with methods:\n   - ReadTrialRecords(string inputPath): Reads CSV and returns IEnumerable<TrialRecord>\n   - WriteEnhancedRecords(string outputPath, IEnumerable<TrialRecord> records): Writes enhanced records to CSV\n2. Use CsvHelper library for CSV operations\n3. Ensure the processor handles the required columns:\n   - NCDID\n   - trial-title\n   - trial-description\n4. Add validation to check if required columns exist in the input file\n5. Implement logic to maintain original column order and data when writing output\n6. Add the new columns to output:\n   - short-summary\n   - long-summary\n7. Handle CSV format exceptions gracefully with clear error messages\n8. Implement batch processing capability to handle the specified number of rows",
+        "testStrategy": "1. Unit test with sample CSV files containing valid data\n2. Test with malformed CSV files to verify error handling\n3. Verify column preservation in output files\n4. Test with various CSV formats (different delimiters, quoted fields, etc.)\n5. Verify batch processing works correctly with different row limits\n6. Test with empty files and files with only headers",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Implement Claude API Client",
+        "description": "Create a client for interacting with the Claude API to generate trial summaries based on configured prompts.",
+        "details": "1. Implement the ClaudeApiClient class with methods:\n   - GenerateShortSummary(TrialRecord record): Generates a short summary\n   - GenerateLongSummary(TrialRecord record): Generates a long summary\n2. Use HttpClient for API communication\n3. Implement prompt template processing to replace variables:\n   - {trial-title}\n   - {trial-description}\n   - {NCDID}\n4. Configure API requests according to settings:\n   - API key from configuration\n   - Model name (claude-sonnet-4-20250514)\n   - API version (2023-06-01)\n   - Base URL (https://api.anthropic.com)\n5. Set request parameters based on configuration:\n   - MaxTokens\n   - Temperature\n6. Implement error handling for API responses\n7. Add retry logic with exponential backoff for failed requests\n8. Implement rate limiting to respect API constraints",
+        "testStrategy": "1. Unit test prompt template processing\n2. Mock API responses to test successful and error scenarios\n3. Test retry logic with simulated failures\n4. Verify rate limiting behavior\n5. Test with actual API (integration test) using sample trial data\n6. Verify API key handling is secure",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Create Progress Reporting System",
+        "description": "Implement a progress reporting system that provides real-time feedback on processing status as specified in the UX requirements.",
+        "details": "1. Create a ProgressReporter class with methods:\n   - StartProcess(int totalRows): Initializes a new process\n   - UpdateProgress(int currentRow, string status): Updates progress display\n   - CompleteProcess(): Finalizes and shows summary statistics\n2. Implement a progress bar visualization using console characters\n3. Display current processing information:\n   - Current row / total rows\n   - Current trial NCDID\n   - Status of summary generation with timing\n4. Track and display summary statistics:\n   - Total processed rows\n   - Successful rows\n   - Failed rows\n   - Total processing time\n   - Average time per row\n5. Support verbose mode with additional details\n6. Ensure progress display works correctly when processing is interrupted",
+        "testStrategy": "1. Test progress calculations with various row counts\n2. Verify display formatting in different console environments\n3. Test with mock processing to ensure timing calculations are accurate\n4. Verify summary statistics are calculated correctly\n5. Test verbose mode output",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Implement Logging System",
+        "description": "Create a comprehensive logging system that records application activity, errors, and processing details.",
+        "details": "1. Configure Microsoft.Extensions.Logging for the application\n2. Implement log levels:\n   - Information: Normal processing events\n   - Warning: Non-critical issues\n   - Error: Processing failures\n   - Debug: Detailed information for troubleshooting\n3. Create console logging for immediate feedback\n4. Implement file logging for persistent records\n5. Log key events:\n   - Application start/stop\n   - Configuration loading\n   - File operations\n   - API requests and responses (excluding sensitive data)\n   - Processing successes and failures\n6. Create structured logging for machine-readable output\n7. Ensure no API keys or sensitive information is logged\n8. Implement log rotation for large processing jobs",
+        "testStrategy": "1. Verify logs are created with correct format and content\n2. Test log level filtering\n3. Ensure sensitive information is not logged\n4. Verify log file creation and rotation\n5. Test logging performance under heavy load",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Develop Main Trial Summarizer Logic",
+        "description": "Implement the core TrialSummarizer class that coordinates the overall processing workflow.",
+        "details": "1. Create the TrialSummarizer class with methods:\n   - ProcessTrials(string inputFile, string outputFile, int? rowLimit): Main processing method\n   - ProcessSingleTrial(TrialRecord record): Processes a single trial record\n2. Implement the main workflow:\n   - Load configuration\n   - Read input CSV\n   - Process each record (generate summaries)\n   - Write enhanced output CSV\n   - Report progress and results\n3. Add error handling for each processing stage\n4. Implement batch processing with the specified row limit\n5. Track processing statistics\n6. Coordinate between components:\n   - CsvProcessor\n   - ClaudeApiClient\n   - ProgressReporter\n   - Logging\n7. Implement graceful shutdown on interruption\n8. Add resume capability to continue from last successful row",
+        "testStrategy": "1. Unit test the workflow with mock dependencies\n2. Test error handling for various failure scenarios\n3. Verify batch processing with different row limits\n4. Test interruption and resume functionality\n5. Verify correct coordination between components\n6. Test end-to-end processing with sample data",
+        "priority": "high",
+        "dependencies": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement Error Handling and Recovery",
+        "description": "Create a robust error handling system with retry logic, graceful degradation, and recovery capabilities.",
+        "details": "1. Implement a centralized error handling strategy\n2. Create specific exception types for different error categories:\n   - ConfigurationException\n   - CsvProcessingException\n   - ApiException\n3. Implement retry logic with exponential backoff for transient errors:\n   - Network issues\n   - API rate limiting\n   - Temporary service unavailability\n4. Add graceful degradation options:\n   - Continue processing on non-critical errors\n   - Skip problematic records\n   - Use fallback options when possible\n5. Implement recovery mechanisms:\n   - Save processing state periodically\n   - Create checkpoint files\n   - Support resuming from last successful record\n6. Add detailed error reporting:\n   - Clear error messages\n   - Suggested remediation steps\n   - Context information for debugging\n7. Track failed records for manual review",
+        "testStrategy": "1. Test retry logic with simulated failures\n2. Verify recovery from various error scenarios\n3. Test checkpoint creation and resume functionality\n4. Verify error messages are clear and actionable\n5. Test graceful degradation under different failure conditions\n6. Verify tracking of failed records",
+        "priority": "high",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Optimize Performance and Resource Usage",
+        "description": "Enhance the application to meet performance requirements and efficiently manage resources.",
+        "details": "1. Implement performance monitoring:\n   - Track processing time per record\n   - Monitor memory usage\n   - Log API response times\n2. Optimize CSV processing:\n   - Use streaming for large files\n   - Implement efficient memory management\n3. Enhance API client performance:\n   - Implement connection pooling\n   - Optimize HTTP request/response handling\n4. Add rate limiting controls:\n   - Configurable request throttling\n   - Adaptive rate limiting based on API responses\n5. Optimize memory usage:\n   - Avoid loading entire CSV into memory\n   - Process records in batches\n   - Implement proper disposal of resources\n6. Add performance-related configuration options:\n   - Batch size\n   - Thread count\n   - Memory limits\n7. Implement cancellation support for long-running operations",
+        "testStrategy": "1. Benchmark processing speed with various dataset sizes\n2. Test memory usage with large files (10,000+ rows)\n3. Verify rate limiting effectiveness\n4. Test performance under different configuration settings\n5. Measure API throughput and optimize accordingly\n6. Test cancellation and resource cleanup",
+        "priority": "medium",
+        "dependencies": [
+          7,
+          8
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Create Documentation and Examples",
+        "description": "Develop comprehensive documentation, usage examples, and sample files for the application.",
+        "details": "1. Create a detailed README.md with:\n   - Installation instructions\n   - Configuration guide\n   - Command-line reference\n   - Usage examples\n   - Troubleshooting tips\n2. Add inline code documentation:\n   - XML comments for public APIs\n   - Method and class descriptions\n   - Parameter documentation\n3. Create sample files:\n   - Example input CSV\n   - Sample configuration with different settings\n   - Expected output examples\n4. Document error codes and resolution steps\n5. Add performance tuning guidelines\n6. Create a quick-start guide for new users\n7. Document the architecture and component interactions\n8. Add future enhancement considerations from section 8.1",
+        "testStrategy": "1. Verify documentation accuracy with sample runs\n2. Test installation process following the documentation\n3. Have team members review for clarity and completeness\n4. Ensure all command-line options are documented\n5. Verify troubleshooting steps resolve common issues\n6. Test sample files to ensure they work as documented",
+        "priority": "medium",
+        "dependencies": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-31T04:47:16.384Z",
+      "updated": "2025-07-31T04:47:16.384Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+# Task ID: 4
+# Title: Implement Claude API Client
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Create a client for interacting with the Claude API to generate trial summaries based on configured prompts.
+# Details:
+1. Implement the ClaudeApiClient class with methods:
+   - GenerateShortSummary(TrialRecord record): Generates a short summary
+   - GenerateLongSummary(TrialRecord record): Generates a long summary
+2. Use HttpClient for API communication
+3. Implement prompt template processing to replace variables:
+   - {trial-title}
+   - {trial-description}
+   - {NCDID}
+4. Configure API requests according to settings:
+   - API key from configuration
+   - Model name (claude-sonnet-4-20250514)
+   - API version (2023-06-01)
+   - Base URL (https://api.anthropic.com)
+5. Set request parameters based on configuration:
+   - MaxTokens
+   - Temperature
+6. Implement error handling for API responses
+7. Add retry logic with exponential backoff for failed requests
+8. Implement rate limiting to respect API constraints
+
+# Test Strategy:
+1. Unit test prompt template processing
+2. Mock API responses to test successful and error scenarios
+3. Test retry logic with simulated failures
+4. Verify rate limiting behavior
+5. Test with actual API (integration test) using sample trial data
+6. Verify API key handling is secure
