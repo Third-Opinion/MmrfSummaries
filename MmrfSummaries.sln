@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MmrfSummaries", "MmrfSummaries\MmrfSummaries.csproj", "{A06888B4-1E11-4F2A-90F3-E6A0DBEBC431}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlGenerator", "SqlGenerator\SqlGenerator.csproj", "{B07999C4-2E11-4F2A-90F3-E6A0DBEBC432}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{A06888B4-1E11-4F2A-90F3-E6A0DBEBC431}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A06888B4-1E11-4F2A-90F3-E6A0DBEBC431}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A06888B4-1E11-4F2A-90F3-E6A0DBEBC431}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B07999C4-2E11-4F2A-90F3-E6A0DBEBC432}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B07999C4-2E11-4F2A-90F3-E6A0DBEBC432}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B07999C4-2E11-4F2A-90F3-E6A0DBEBC432}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B07999C4-2E11-4F2A-90F3-E6A0DBEBC432}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

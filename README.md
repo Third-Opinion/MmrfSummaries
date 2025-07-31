@@ -20,6 +20,7 @@ The Clinical Trial Summarizer is a .NET 8.0 console application that enhances cl
 - **🎛️ Configurable**: Customizable prompts, API settings, and processing parameters
 - **🚀 Progress Tracking**: Real-time progress reporting with detailed statistics
 - **🛡️ Error Handling**: Robust retry logic with exponential backoff for API calls
+- **🗄️ SQL Integration**: Generate UPDATE scripts for database integration with nlp_extensions table
 
 ## 📋 Requirements
 
@@ -198,6 +199,42 @@ The project includes a separate utility for fetching sample data from ClinicalTr
 cd ClinicalTrialsDataFetcher
 dotnet run -- --nct-ids NCT06171685,NCT06158841 --output sample_data.csv
 ```
+
+## 🗄️ SQL Script Generator
+
+The SQL Generator creates UPDATE statements for database integration:
+
+```bash
+# Generate SQL script from CSV summaries
+dotnet run --project SqlGenerator -- summaries.csv update_statements.sql
+
+# With verbose logging and custom batch size
+dotnet run --project SqlGenerator -- summaries.csv update_statements.sql --verbose --batch-size 500
+```
+
+### Database Integration Workflow
+
+```bash
+# 1. Generate AI summaries
+dotnet run --project MmrfSummaries -- input.csv summaries.csv
+
+# 2. Generate SQL UPDATE statements
+dotnet run --project SqlGenerator -- summaries.csv database_updates.sql
+
+# 3. Execute SQL against your nlp_extensions database
+# Run database_updates.sql in your SQL client
+```
+
+### Generated SQL Format
+
+```sql
+UPDATE nlp_extensions
+SET summary = 'AI-generated comprehensive summary...',
+    short_summary = 'AI-generated short summary...'
+WHERE nct_id = 'NCT06171685';
+```
+
+For detailed SQL Generator documentation, see [SqlGenerator/README.md](SqlGenerator/README.md).
 
 ## 📝 Logging
 

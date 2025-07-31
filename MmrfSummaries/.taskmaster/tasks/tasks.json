@@ -1,153 +1,134 @@
 {
-  "tasks": [],
   "master": {
     "tasks": [
       {
         "id": 1,
-        "title": "Setup Project Structure and Configuration",
-        "description": "Initialize the .NET 8.0 project with required dependencies and create the configuration management system.",
-        "details": "1. Create a new .NET 8.0 console application using `dotnet new console`\n2. Add required NuGet packages:\n   - System.Text.Json\n   - CsvHelper\n   - Microsoft.Extensions.Configuration\n   - Microsoft.Extensions.Configuration.Json\n   - Microsoft.Extensions.Logging\n   - Microsoft.Extensions.Logging.Console\n3. Create the project structure with folders:\n   - Models (for data models)\n   - Services (for business logic)\n   - Helpers (for utility classes)\n4. Implement the ConfigurationManager class to load and parse appsettings.json\n5. Create the data models as specified in section 3.2.2:\n   - TrialRecord\n   - SummarySettings\n   - PromptConfiguration\n6. Create a default appsettings.json file with the structure specified in section 2.2.1",
-        "testStrategy": "1. Unit test the ConfigurationManager to ensure it correctly loads settings\n2. Verify all configuration sections are properly mapped to model objects\n3. Test with both valid and invalid configuration files\n4. Ensure API keys are properly handled and not exposed in logs",
-        "priority": "high",
-        "dependencies": [],
+        "title": "Create SQL Script Generator for Database Updates",
+        "description": "Develop a feature that reads the output CSV file containing AI-generated summaries and generates SQL UPDATE statements to update the 'nlp_extensions' database with 'summary' and 'short_summary' columns using nct_id as the key.",
+        "details": "Implement a SQL script generator with the following specifications:\n\n1. Create a new module named `sql_generator.py` that will handle the SQL script generation.\n\n2. The module should:\n   - Accept a path to the CSV file as input\n   - Read the CSV file using pandas or csv module\n   - Parse each row to extract the nct_id, summary, and short_summary fields\n   - Generate SQL UPDATE statements in the format:\n     ```sql\n     UPDATE nlp_extensions \n     SET summary = 'generated_summary_text', \n         short_summary = 'generated_short_summary_text' \n     WHERE nct_id = 'specific_nct_id';\n     ```\n   - Handle proper SQL escaping for special characters in the summary text (e.g., single quotes)\n   - Write the generated SQL statements to an output file (e.g., 'update_summaries.sql')\n\n3. Implementation considerations:\n   - Ensure proper error handling for file operations (reading CSV, writing SQL)\n   - Validate that the CSV contains the required columns before processing\n   - Add logging to track the number of SQL statements generated\n   - Include progress indicators for large CSV files\n   - Consider implementing batch processing for very large files\n   - Add comments to the generated SQL file indicating when it was generated and from which source file\n\n4. Create a command-line interface to run the generator:\n   ```\n   python sql_generator.py --input path/to/summaries.csv --output path/to/update_statements.sql\n   ```\n\n5. Add appropriate documentation in the code and a README section explaining how to use the SQL generator.",
+        "testStrategy": "1. Unit Testing:\n   - Create test cases with sample CSV data containing various edge cases:\n     - Summaries with special characters (quotes, apostrophes, etc.)\n     - Missing values in some fields\n     - Very long summary text\n   - Verify the generated SQL statements are properly formatted and escaped\n\n2. Integration Testing:\n   - Test the end-to-end process by:\n     - Creating a sample CSV file with known data\n     - Running the SQL generator\n     - Executing the generated SQL against a test database\n     - Verifying the database records are updated correctly\n\n3. Manual Verification:\n   - Review a sample of generated SQL statements to ensure they follow the correct format\n   - Check that special characters are properly escaped\n   - Verify the SQL file includes appropriate comments and metadata\n\n4. Performance Testing:\n   - Test with a large CSV file (e.g., 10,000+ rows) to ensure the generator handles it efficiently\n   - Measure and optimize processing time if necessary\n\n5. Command-line Interface Testing:\n   - Verify all command-line options work as expected\n   - Test error handling for invalid inputs or missing files",
         "status": "done",
-        "subtasks": []
+        "dependencies": [],
+        "priority": "medium",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create SQL Generator Module Structure",
+            "description": "Set up the basic structure for the sql_generator.py module with necessary imports, function definitions, and command-line argument parsing.",
+            "dependencies": [],
+            "details": "Create a new file named sql_generator.py with the following components:\n1. Import necessary libraries (argparse, pandas/csv, logging, sys)\n2. Set up logging configuration\n3. Define the main function structure\n4. Implement command-line argument parsing using argparse\n5. Add validation for input and output file paths\n6. Create a basic error handling framework\n7. Set up the entry point with if __name__ == '__main__'",
+            "status": "done",
+            "testStrategy": "Verify the module can be imported without errors and the command-line interface accepts the required arguments correctly."
+          },
+          {
+            "id": 2,
+            "title": "Implement CSV File Reading and Validation",
+            "description": "Develop the functionality to read and validate the input CSV file containing the summary data.",
+            "dependencies": [],
+            "details": "Implement a function to:\n1. Read the CSV file using pandas (preferred for data manipulation)\n2. Validate that the required columns (nct_id, summary, short_summary) exist in the CSV\n3. Handle potential errors (file not found, permission issues, malformed CSV)\n4. Add logging for the number of records read\n5. Implement basic data cleaning/preprocessing if needed\n6. Return the validated DataFrame for further processing",
+            "status": "done",
+            "testStrategy": "Create test CSV files with valid and invalid structures to verify the validation logic works correctly. Test with empty files and files with missing columns."
+          },
+          {
+            "id": 3,
+            "title": "Develop SQL Statement Generation Logic",
+            "description": "Create the core functionality to generate properly formatted and escaped SQL UPDATE statements from the validated data.",
+            "dependencies": [],
+            "details": "Implement a function that:\n1. Iterates through each row in the validated DataFrame\n2. Properly escapes special characters in summary and short_summary fields (especially single quotes)\n3. Formats each row into a valid SQL UPDATE statement following the specified format\n4. Handles NULL values appropriately\n5. Implements progress tracking for large files\n6. Returns the collection of generated SQL statements\n7. Adds appropriate error handling for malformed data",
+            "status": "done",
+            "testStrategy": "Test with various summary texts containing special characters, quotes, and SQL injection patterns to ensure proper escaping. Verify the generated SQL statements are valid and correctly formatted."
+          },
+          {
+            "id": 4,
+            "title": "Implement SQL File Writing Functionality",
+            "description": "Create the functionality to write the generated SQL statements to an output file with proper formatting and metadata.",
+            "dependencies": [],
+            "details": "Implement a function that:\n1. Takes the collection of generated SQL statements\n2. Creates the output file at the specified path\n3. Writes a header comment with generation timestamp and source file information\n4. Writes each SQL statement with proper formatting (one per line with semicolon)\n5. Handles potential file writing errors\n6. Adds appropriate logging for the writing process\n7. Implements batch writing for very large collections of statements",
+            "status": "done",
+            "testStrategy": "Verify the output file is created correctly with proper permissions. Check that the SQL statements are written with correct formatting and that the file includes the appropriate header information."
+          },
+          {
+            "id": 5,
+            "title": "Add Batch Processing and Performance Optimization",
+            "description": "Enhance the SQL generator with batch processing capabilities and performance optimizations for handling large CSV files efficiently.",
+            "dependencies": [],
+            "details": "Implement enhancements including:\n1. Chunk-based processing of large CSV files using pandas read_csv with chunksize parameter\n2. Memory-efficient processing of each chunk\n3. Progress reporting during processing (percentage complete, estimated time remaining)\n4. Optional batch size configuration via command line\n5. Performance metrics logging (processing time, memory usage)\n6. Implement a generator pattern for SQL statement creation to reduce memory footprint\n7. Add documentation in code and update README with usage instructions and performance considerations",
+            "status": "done",
+            "testStrategy": "Test with large CSV files (100K+ rows) to verify memory usage remains stable. Measure and compare processing time with and without batch processing. Verify the progress reporting works correctly during long-running operations."
+          }
+        ]
       },
       {
         "id": 2,
-        "title": "Implement Command Line Interface",
-        "description": "Create the command-line interface that handles argument parsing and validation according to the specified usage pattern.",
-        "details": "1. Use System.CommandLine or a similar library for argument parsing\n2. Implement the following required parameters:\n   - input-file: Path to input CSV file\n   - output-file: Path for output CSV file\n3. Implement optional parameters:\n   - --rows <number>: Number of rows to process (default: all)\n   - --config <path>: Custom config file path (default: appsettings.json)\n   - --verbose: Enable detailed logging\n   - --help: Display usage information\n4. Add validation for all parameters:\n   - Check if input file exists\n   - Verify output file path is valid\n   - Ensure rows parameter is a positive number\n5. Create a help text display that shows usage examples as specified in section 2.3.3\n6. Implement the Program.cs entry point that parses arguments and initializes the application",
-        "testStrategy": "1. Unit test argument parsing with various combinations of valid inputs\n2. Test error handling for invalid arguments\n3. Verify help text is displayed correctly\n4. Test file path validation logic\n5. Ensure default values are applied correctly when optional parameters are omitted",
-        "priority": "high",
-        "dependencies": [
-          1
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 3,
-        "title": "Develop CSV Processing Component",
-        "description": "Create the CsvProcessor class to handle reading input CSV files and writing enhanced output files with additional summary columns.",
-        "details": "1. Implement the CsvProcessor class with methods:\n   - ReadTrialRecords(string inputPath): Reads CSV and returns IEnumerable<TrialRecord>\n   - WriteEnhancedRecords(string outputPath, IEnumerable<TrialRecord> records): Writes enhanced records to CSV\n2. Use CsvHelper library for CSV operations\n3. Ensure the processor handles the required columns:\n   - NCDID\n   - trial-title\n   - trial-description\n4. Add validation to check if required columns exist in the input file\n5. Implement logic to maintain original column order and data when writing output\n6. Add the new columns to output:\n   - short-summary\n   - long-summary\n7. Handle CSV format exceptions gracefully with clear error messages\n8. Implement batch processing capability to handle the specified number of rows",
-        "testStrategy": "1. Unit test with sample CSV files containing valid data\n2. Test with malformed CSV files to verify error handling\n3. Verify column preservation in output files\n4. Test with various CSV formats (different delimiters, quoted fields, etc.)\n5. Verify batch processing works correctly with different row limits\n6. Test with empty files and files with only headers",
-        "priority": "high",
-        "dependencies": [
-          1
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 4,
-        "title": "Implement Claude API Client",
-        "description": "Create a client for interacting with the Claude API to generate trial summaries based on configured prompts.",
-        "details": "1. Implement the ClaudeApiClient class with methods:\n   - GenerateShortSummary(TrialRecord record): Generates a short summary\n   - GenerateLongSummary(TrialRecord record): Generates a long summary\n2. Use HttpClient for API communication\n3. Implement prompt template processing to replace variables:\n   - {trial-title}\n   - {trial-description}\n   - {NCDID}\n4. Configure API requests according to settings:\n   - API key from configuration\n   - Model name (claude-sonnet-4-20250514)\n   - API version (2023-06-01)\n   - Base URL (https://api.anthropic.com)\n5. Set request parameters based on configuration:\n   - MaxTokens\n   - Temperature\n6. Implement error handling for API responses\n7. Add retry logic with exponential backoff for failed requests\n8. Implement rate limiting to respect API constraints",
-        "testStrategy": "1. Unit test prompt template processing\n2. Mock API responses to test successful and error scenarios\n3. Test retry logic with simulated failures\n4. Verify rate limiting behavior\n5. Test with actual API (integration test) using sample trial data\n6. Verify API key handling is secure",
-        "priority": "high",
-        "dependencies": [
-          1
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 5,
-        "title": "Create Progress Reporting System",
-        "description": "Implement a progress reporting system that provides real-time feedback on processing status as specified in the UX requirements.",
-        "details": "1. Create a ProgressReporter class with methods:\n   - StartProcess(int totalRows): Initializes a new process\n   - UpdateProgress(int currentRow, string status): Updates progress display\n   - CompleteProcess(): Finalizes and shows summary statistics\n2. Implement a progress bar visualization using console characters\n3. Display current processing information:\n   - Current row / total rows\n   - Current trial NCDID\n   - Status of summary generation with timing\n4. Track and display summary statistics:\n   - Total processed rows\n   - Successful rows\n   - Failed rows\n   - Total processing time\n   - Average time per row\n5. Support verbose mode with additional details\n6. Ensure progress display works correctly when processing is interrupted",
-        "testStrategy": "1. Test progress calculations with various row counts\n2. Verify display formatting in different console environments\n3. Test with mock processing to ensure timing calculations are accurate\n4. Verify summary statistics are calculated correctly\n5. Test verbose mode output",
-        "priority": "medium",
-        "dependencies": [
-          1,
-          2
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 6,
-        "title": "Implement Logging System",
-        "description": "Create a comprehensive logging system that records application activity, errors, and processing details.",
-        "details": "1. Configure Microsoft.Extensions.Logging for the application\n2. Implement log levels:\n   - Information: Normal processing events\n   - Warning: Non-critical issues\n   - Error: Processing failures\n   - Debug: Detailed information for troubleshooting\n3. Create console logging for immediate feedback\n4. Implement file logging for persistent records\n5. Log key events:\n   - Application start/stop\n   - Configuration loading\n   - File operations\n   - API requests and responses (excluding sensitive data)\n   - Processing successes and failures\n6. Create structured logging for machine-readable output\n7. Ensure no API keys or sensitive information is logged\n8. Implement log rotation for large processing jobs",
-        "testStrategy": "1. Verify logs are created with correct format and content\n2. Test log level filtering\n3. Ensure sensitive information is not logged\n4. Verify log file creation and rotation\n5. Test logging performance under heavy load",
-        "priority": "medium",
-        "dependencies": [
-          1,
-          2
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 7,
-        "title": "Develop Main Trial Summarizer Logic",
-        "description": "Implement the core TrialSummarizer class that coordinates the overall processing workflow.",
-        "details": "1. Create the TrialSummarizer class with methods:\n   - ProcessTrials(string inputFile, string outputFile, int? rowLimit): Main processing method\n   - ProcessSingleTrial(TrialRecord record): Processes a single trial record\n2. Implement the main workflow:\n   - Load configuration\n   - Read input CSV\n   - Process each record (generate summaries)\n   - Write enhanced output CSV\n   - Report progress and results\n3. Add error handling for each processing stage\n4. Implement batch processing with the specified row limit\n5. Track processing statistics\n6. Coordinate between components:\n   - CsvProcessor\n   - ClaudeApiClient\n   - ProgressReporter\n   - Logging\n7. Implement graceful shutdown on interruption\n8. Add resume capability to continue from last successful row",
-        "testStrategy": "1. Unit test the workflow with mock dependencies\n2. Test error handling for various failure scenarios\n3. Verify batch processing with different row limits\n4. Test interruption and resume functionality\n5. Verify correct coordination between components\n6. Test end-to-end processing with sample data",
-        "priority": "high",
-        "dependencies": [
-          3,
-          4,
-          5,
-          6
-        ],
-        "status": "done",
-        "subtasks": []
-      },
-      {
-        "id": 8,
-        "title": "Implement Error Handling and Recovery",
-        "description": "Create a robust error handling system with retry logic, graceful degradation, and recovery capabilities.",
-        "details": "1. Implement a centralized error handling strategy\n2. Create specific exception types for different error categories:\n   - ConfigurationException\n   - CsvProcessingException\n   - ApiException\n3. Implement retry logic with exponential backoff for transient errors:\n   - Network issues\n   - API rate limiting\n   - Temporary service unavailability\n4. Add graceful degradation options:\n   - Continue processing on non-critical errors\n   - Skip problematic records\n   - Use fallback options when possible\n5. Implement recovery mechanisms:\n   - Save processing state periodically\n   - Create checkpoint files\n   - Support resuming from last successful record\n6. Add detailed error reporting:\n   - Clear error messages\n   - Suggested remediation steps\n   - Context information for debugging\n7. Track failed records for manual review",
-        "testStrategy": "1. Test retry logic with simulated failures\n2. Verify recovery from various error scenarios\n3. Test checkpoint creation and resume functionality\n4. Verify error messages are clear and actionable\n5. Test graceful degradation under different failure conditions\n6. Verify tracking of failed records",
-        "priority": "high",
-        "dependencies": [
-          7
-        ],
+        "title": "Implement Performance Monitoring and Resource Optimization",
+        "description": "Enhance the clinical trial summarizer application with performance monitoring capabilities and resource optimization techniques to ensure efficient operation with large datasets.",
+        "details": "Implement the following performance enhancements and monitoring capabilities:\n\n1. **Performance Monitoring System**:\n   - Create a new module `performance_monitor.py` to track key metrics\n   - Implement decorators or context managers to measure function execution time\n   - Add memory usage tracking using `psutil` or similar library\n   - Create logging for API response times with appropriate log levels\n   - Design a simple dashboard or report generation for performance metrics\n\n2. **CSV Processing Optimization**:\n   - Implement streaming processing for CSV files using generators\n   - Replace any full file loading with iterative processing\n   - Add chunked reading capabilities with configurable chunk sizes\n   - Ensure proper file handle management with context managers\n\n3. **API Client Performance**:\n   - Implement connection pooling for HTTP requests\n   - Add configurable timeouts and retry mechanisms\n   - Optimize header handling and request preparation\n   - Consider implementing async requests for parallel processing\n\n4. **Rate Limiting and Throttling**:\n   - Add configurable rate limiting for external API calls\n   - Implement adaptive throttling based on response times\n   - Create backoff strategies for failed requests\n   - Add monitoring for rate limit usage\n\n5. **Memory Usage Optimization**:\n   - Implement batch processing for large datasets\n   - Add proper resource disposal with garbage collection hints\n   - Optimize object creation and reuse where appropriate\n   - Monitor and log memory spikes\n\n6. **Configuration Options**:\n   - Create a configuration module for performance settings\n   - Add parameters for batch size, thread count, and memory limits\n   - Implement configuration validation\n   - Add documentation for optimal settings\n\n7. **Cancellation Support**:\n   - Implement cancellation tokens or signals for long-running operations\n   - Add graceful shutdown capabilities\n   - Ensure proper resource cleanup on cancellation\n   - Add progress reporting for long-running tasks",
+        "testStrategy": "1. **Performance Benchmarking**:\n   - Create baseline performance measurements before optimization\n   - Develop automated benchmarking scripts to compare before/after metrics\n   - Test with various file sizes (small, medium, large) to verify scaling\n   - Measure and record memory usage patterns under different loads\n\n2. **Resource Usage Testing**:\n   - Use profiling tools (e.g., memory_profiler, cProfile) to verify optimizations\n   - Test memory usage with increasingly large datasets to identify leaks\n   - Verify proper resource cleanup after operations complete\n   - Monitor CPU usage during batch processing operations\n\n3. **Load Testing**:\n   - Simulate concurrent users/requests to test system stability\n   - Verify rate limiting functionality under high load\n   - Test adaptive throttling by simulating varying API response times\n   - Measure throughput with different configuration settings\n\n4. **Integration Testing**:\n   - Verify that performance optimizations don't affect output accuracy\n   - Test cancellation functionality during various processing stages\n   - Ensure monitoring systems correctly log and report performance issues\n   - Validate that configuration changes properly affect system behavior\n\n5. **Edge Case Testing**:\n   - Test with malformed or extremely large CSV files\n   - Verify behavior during network interruptions for API calls\n   - Test memory optimization with limited system resources\n   - Validate graceful degradation under extreme conditions",
         "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 9,
-        "title": "Optimize Performance and Resource Usage",
-        "description": "Enhance the application to meet performance requirements and efficiently manage resources.",
-        "details": "1. Implement performance monitoring:\n   - Track processing time per record\n   - Monitor memory usage\n   - Log API response times\n2. Optimize CSV processing:\n   - Use streaming for large files\n   - Implement efficient memory management\n3. Enhance API client performance:\n   - Implement connection pooling\n   - Optimize HTTP request/response handling\n4. Add rate limiting controls:\n   - Configurable request throttling\n   - Adaptive rate limiting based on API responses\n5. Optimize memory usage:\n   - Avoid loading entire CSV into memory\n   - Process records in batches\n   - Implement proper disposal of resources\n6. Add performance-related configuration options:\n   - Batch size\n   - Thread count\n   - Memory limits\n7. Implement cancellation support for long-running operations",
-        "testStrategy": "1. Benchmark processing speed with various dataset sizes\n2. Test memory usage with large files (10,000+ rows)\n3. Verify rate limiting effectiveness\n4. Test performance under different configuration settings\n5. Measure API throughput and optimize accordingly\n6. Test cancellation and resource cleanup",
-        "priority": "medium",
         "dependencies": [
-          7,
-          8
+          1
         ],
-        "status": "pending",
-        "subtasks": []
-      },
-      {
-        "id": 10,
-        "title": "Create Documentation and Examples",
-        "description": "Develop comprehensive documentation, usage examples, and sample files for the application.",
-        "details": "1. Create a detailed README.md with:\n   - Installation instructions\n   - Configuration guide\n   - Command-line reference\n   - Usage examples\n   - Troubleshooting tips\n2. Add inline code documentation:\n   - XML comments for public APIs\n   - Method and class descriptions\n   - Parameter documentation\n3. Create sample files:\n   - Example input CSV\n   - Sample configuration with different settings\n   - Expected output examples\n4. Document error codes and resolution steps\n5. Add performance tuning guidelines\n6. Create a quick-start guide for new users\n7. Document the architecture and component interactions\n8. Add future enhancement considerations from section 8.1",
-        "testStrategy": "1. Verify documentation accuracy with sample runs\n2. Test installation process following the documentation\n3. Have team members review for clarity and completeness\n4. Ensure all command-line options are documented\n5. Verify troubleshooting steps resolve common issues\n6. Test sample files to ensure they work as documented",
         "priority": "medium",
-        "dependencies": [
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9
-        ],
-        "status": "done",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Performance Monitoring Module",
+            "description": "Develop a performance monitoring module that tracks execution time, memory usage, and API response times with appropriate logging mechanisms.",
+            "dependencies": [],
+            "details": "Create a new module `performance_monitor.py` with the following components:\n1. Implement a decorator `@measure_execution_time` that logs function execution time\n2. Create a context manager `MemoryTracker` using psutil to monitor memory usage before and after operations\n3. Implement an API response time tracker that logs request/response times\n4. Set up appropriate logging configuration with different levels (INFO, WARNING, ERROR)\n5. Create utility functions to generate performance reports in both console and JSON formats\n6. Implement singleton pattern to ensure consistent monitoring across the application",
+            "status": "pending",
+            "testStrategy": "Create unit tests with mock functions to verify timing accuracy. Test memory tracking with controlled allocations. Verify logging output format and content. Create benchmark tests to establish baseline performance metrics."
+          },
+          {
+            "id": 2,
+            "title": "Optimize CSV Processing with Streaming",
+            "description": "Refactor CSV processing to use streaming and chunked reading for efficient handling of large datasets with minimal memory footprint.",
+            "dependencies": [],
+            "details": "1. Create a new module `csv_processor.py` that implements generator-based CSV processing\n2. Replace any instances of full file loading with iterative processing using `yield`\n3. Implement a configurable chunk size parameter for reading large files\n4. Ensure proper file handle management using context managers (`with` statements)\n5. Add progress tracking for long-running CSV operations\n6. Implement error handling that can recover from parsing errors without losing the entire batch",
+            "status": "pending",
+            "testStrategy": "Test with progressively larger CSV files (1MB, 10MB, 100MB) to verify memory usage remains constant. Measure processing time improvements. Verify file handles are properly closed even when exceptions occur."
+          },
+          {
+            "id": 3,
+            "title": "Enhance API Client with Connection Pooling and Retry Logic",
+            "description": "Optimize the API client with connection pooling, timeout configurations, retry mechanisms, and rate limiting to improve reliability and performance.",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "1. Refactor existing API client to use connection pooling with `requests.Session`\n2. Implement configurable timeouts for connect, read, and total request time\n3. Add exponential backoff retry mechanism for failed requests\n4. Implement rate limiting to prevent API throttling\n5. Create an adaptive throttling system that adjusts request rate based on response times\n6. Add detailed logging of API interactions using the performance monitoring module\n7. Consider implementing async requests using `aiohttp` for parallel processing of independent requests",
+            "status": "pending",
+            "testStrategy": "Create mock API endpoints with simulated failures and delays. Test retry logic with various failure scenarios. Measure throughput improvements with connection pooling. Verify rate limiting prevents throttling under high load conditions."
+          },
+          {
+            "id": 4,
+            "title": "Implement Batch Processing and Memory Optimization",
+            "description": "Develop batch processing capabilities and memory optimization techniques to efficiently handle large datasets with controlled resource usage.",
+            "dependencies": [
+              "2.2"
+            ],
+            "details": "1. Create a `batch_processor.py` module that implements batch processing for large datasets\n2. Add configurable batch size parameters\n3. Implement proper resource disposal with explicit garbage collection hints\n4. Optimize object creation by implementing object pooling for frequently used objects\n5. Add memory usage monitoring that logs warnings when approaching configurable thresholds\n6. Implement a resource manager that can pause processing when memory usage exceeds safe limits\n7. Create progress reporting for long-running batch operations",
+            "status": "pending",
+            "testStrategy": "Test with datasets of increasing size to verify linear scaling. Monitor memory usage patterns to confirm proper resource management. Verify batch processing correctly handles all records without duplication or omission."
+          },
+          {
+            "id": 5,
+            "title": "Create Configuration System and Performance Dashboard",
+            "description": "Develop a centralized configuration system for performance settings and create a simple dashboard for visualizing performance metrics.",
+            "dependencies": [
+              "2.1",
+              "2.3",
+              "2.4"
+            ],
+            "details": "1. Create a `performance_config.py` module with default settings for all performance parameters\n2. Implement configuration validation to prevent invalid settings\n3. Add the ability to load configuration from environment variables and/or config files\n4. Create a simple web-based dashboard using Flask or FastAPI to display performance metrics\n5. Implement real-time and historical performance data visualization\n6. Add exportable performance reports in CSV and PDF formats\n7. Create documentation for optimal configuration settings based on different hardware profiles\n8. Implement cancellation support for long-running operations with proper resource cleanup",
+            "status": "pending",
+            "testStrategy": "Test configuration loading from different sources. Verify validation prevents invalid settings. Test dashboard with simulated performance data. Verify cancellation properly releases resources and stops operations."
+          }
+        ]
       }
     ],
     "metadata": {
-      "created": "2025-07-31T04:47:16.384Z",
-      "updated": "2025-07-31T07:02:16.451Z",
+      "created": "2025-07-31T07:09:09.679Z",
+      "updated": "2025-07-31T07:57:27.289Z",
       "description": "Tasks for master context"
     }
   }
